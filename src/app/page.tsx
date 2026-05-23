@@ -215,7 +215,7 @@ export default function Home() {
         <Metric label="AI status" value={visibleAnalysis.aiProvider} tone="low" />
       </section>
 
-      <section className="workspace watchtower">
+      <section className="watchLayout">
         <aside className="panel controls">
           <form onSubmit={submit}>
             <label htmlFor="target">Target</label>
@@ -253,6 +253,46 @@ export default function Home() {
           {error ? <p className="error">{error}</p> : null}
         </aside>
 
+        <section className="panel feed">
+          <div className="sectionHead">
+            <p className="label">Live anomaly feed</p>
+            <strong>Priority queue</strong>
+          </div>
+          {watchEvents.map((event) => (
+            <button
+              className="eventRow"
+              data-severity={event.severity}
+              key={event.id}
+              type="button"
+              onClick={() => {
+                setSelectedEvent(event);
+                setTarget(event.target);
+                setAnalysis(null);
+              }}
+            >
+              <span>{event.time}</span>
+              <strong>{event.title}</strong>
+              <em>{event.protocol}</em>
+              <b>{event.amount}</b>
+            </button>
+          ))}
+
+          <div className="smartMoney">
+            <div className="sectionHead compact">
+              <p className="label">Smart money</p>
+              <strong>Wallet clusters</strong>
+            </div>
+            {smartMoneyRows.map((row) => (
+              <div className="moneyRow" key={row.label}>
+                <strong>{row.label}</strong>
+                <span>{row.tag}</span>
+                <b>{row.flow}</b>
+                <em>{row.confidence}</em>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <section className="panel report">
           <div className="scoreRow">
             <div>
@@ -278,59 +318,20 @@ export default function Home() {
           {visibleAnalysis.aiStatus ? (
             <p className="statusLine">AI status: {visibleAnalysis.aiStatus}</p>
           ) : null}
-        </section>
-      </section>
 
-      <section className="monitorGrid">
-        <section className="panel feed">
-          <div className="sectionHead">
-            <p className="label">Live anomaly feed</p>
-            <strong>Priority queue</strong>
-          </div>
-          {watchEvents.map((event) => (
-            <button
-              className="eventRow"
-              data-severity={event.severity}
-              key={event.id}
-              type="button"
-              onClick={() => {
-                setSelectedEvent(event);
-                setTarget(event.target);
-                setAnalysis(null);
-              }}
-            >
-              <span>{event.time}</span>
-              <strong>{event.title}</strong>
-              <em>{event.protocol}</em>
-              <b>{event.amount}</b>
-            </button>
-          ))}
-        </section>
-
-        <section className="panel smartMoney">
-          <div className="sectionHead">
-            <p className="label">Smart money</p>
-            <strong>Wallet clusters</strong>
-          </div>
-          {smartMoneyRows.map((row) => (
-            <div className="moneyRow" key={row.label}>
-              <strong>{row.label}</strong>
-              <span>{row.tag}</span>
-              <b>{row.flow}</b>
-              <em>{row.confidence}</em>
+          <div className="detailBlock">
+            <p className="label">Signals</p>
+            <div className="signals">
+              {visibleAnalysis.signals.map((signal) => (
+                <article className="signal" data-severity={signal.severity} key={signal.id}>
+                  <span>{signal.severity}</span>
+                  <h2>{signal.title}</h2>
+                  <p>{signal.evidence}</p>
+                </article>
+              ))}
             </div>
-          ))}
+          </div>
         </section>
-      </section>
-
-      <section className="signals">
-        {visibleAnalysis.signals.map((signal) => (
-          <article className="signal" data-severity={signal.severity} key={signal.id}>
-            <span>{signal.severity}</span>
-            <h2>{signal.title}</h2>
-            <p>{signal.evidence}</p>
-          </article>
-        ))}
       </section>
     </main>
   );
