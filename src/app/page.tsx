@@ -208,15 +208,76 @@ export default function Home() {
         <span className="network">AI anomaly watchlist</span>
       </section>
 
-      <section className="metrics">
-        <Metric label="Open anomalies" value="4" tone="high" />
-        <Metric label="Smart money inflow" value="$3.16M" tone="low" />
-        <Metric label="Failed tx spike" value="40%" tone="high" />
-        <Metric label="AI status" value={visibleAnalysis.aiProvider} tone="low" />
+      <section className="intelZone">
+        <div className="zoneHead">
+          <div>
+            <p className="eyebrow">Information</p>
+            <h2>Network Intelligence</h2>
+          </div>
+          <span>Read-only Mantle monitoring</span>
+        </div>
+
+        <div className="metrics">
+          <Metric label="Open anomalies" value="4" tone="high" />
+          <Metric label="Smart money inflow" value="$3.16M" tone="low" />
+          <Metric label="Failed tx spike" value="40%" tone="high" />
+          <Metric label="AI status" value={visibleAnalysis.aiProvider} tone="low" />
+        </div>
+
+        <div className="intelGrid">
+          <section className="panel feed">
+            <div className="sectionHead">
+              <p className="label">Live anomaly feed</p>
+              <strong>Priority queue</strong>
+            </div>
+            {watchEvents.map((event) => (
+              <button
+                className="eventRow"
+                data-severity={event.severity}
+                key={event.id}
+                type="button"
+                onClick={() => {
+                  setSelectedEvent(event);
+                  setTarget(event.target);
+                  setAnalysis(null);
+                }}
+              >
+                <span>{event.time}</span>
+                <strong>{event.title}</strong>
+                <em>{event.protocol}</em>
+                <b>{event.amount}</b>
+              </button>
+            ))}
+          </section>
+
+          <section className="panel smartMoneyPanel">
+            <div className="sectionHead">
+              <p className="label">Smart money</p>
+              <strong>Wallet clusters</strong>
+            </div>
+            {smartMoneyRows.map((row) => (
+              <div className="moneyRow" key={row.label}>
+                <strong>{row.label}</strong>
+                <span>{row.tag}</span>
+                <b>{row.flow}</b>
+                <em>{row.confidence}</em>
+              </div>
+            ))}
+          </section>
+        </div>
       </section>
 
-      <section className="watchLayout">
-        <aside className="panel controls">
+      <section className="validationZone">
+        <div className="zoneHead">
+          <div>
+            <p className="eyebrow">Validation</p>
+            <h2>Target Review</h2>
+          </div>
+          <span>{analysis ? "Manual analysis" : selectedEvent.title}</span>
+        </div>
+
+        <div className="validationGrid">
+          <aside className="panel controls">
           <form onSubmit={submit}>
             <label htmlFor="target">Target</label>
             <input
@@ -251,49 +312,9 @@ export default function Home() {
           </div>
 
           {error ? <p className="error">{error}</p> : null}
-        </aside>
+          </aside>
 
-        <section className="panel feed">
-          <div className="sectionHead">
-            <p className="label">Live anomaly feed</p>
-            <strong>Priority queue</strong>
-          </div>
-          {watchEvents.map((event) => (
-            <button
-              className="eventRow"
-              data-severity={event.severity}
-              key={event.id}
-              type="button"
-              onClick={() => {
-                setSelectedEvent(event);
-                setTarget(event.target);
-                setAnalysis(null);
-              }}
-            >
-              <span>{event.time}</span>
-              <strong>{event.title}</strong>
-              <em>{event.protocol}</em>
-              <b>{event.amount}</b>
-            </button>
-          ))}
-
-          <div className="smartMoney">
-            <div className="sectionHead compact">
-              <p className="label">Smart money</p>
-              <strong>Wallet clusters</strong>
-            </div>
-            {smartMoneyRows.map((row) => (
-              <div className="moneyRow" key={row.label}>
-                <strong>{row.label}</strong>
-                <span>{row.tag}</span>
-                <b>{row.flow}</b>
-                <em>{row.confidence}</em>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="panel report">
+          <section className="panel report">
           <div className="scoreRow">
             <div>
               <p className="label">Selected event risk</p>
@@ -331,7 +352,8 @@ export default function Home() {
               ))}
             </div>
           </div>
-        </section>
+          </section>
+        </div>
       </section>
     </main>
   );

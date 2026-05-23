@@ -73,16 +73,49 @@ h1 {
   white-space: nowrap;
 }
 
-.workspace,
-.watchLayout {
+.workspace {
   display: grid;
   grid-template-columns: 360px 1fr;
   gap: 18px;
   align-items: stretch;
 }
 
-.watchLayout {
-  grid-template-columns: 310px minmax(410px, 1fr) 390px;
+.intelZone,
+.validationZone {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.zoneHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.zoneHead h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.zoneHead span {
+  color: var(--muted);
+  font-weight: 800;
+  text-align: right;
+}
+
+.intelGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.75fr);
+  gap: 14px;
+}
+
+.validationGrid {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 18px;
   align-items: start;
 }
 
@@ -90,7 +123,7 @@ h1 {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .metric {
@@ -338,13 +371,8 @@ button:disabled {
 }
 
 .feed,
-.smartMoney {
+.smartMoneyPanel {
   padding: 18px;
-}
-
-.smartMoney {
-  margin-top: 18px;
-  padding: 0;
 }
 
 .sectionHead {
@@ -353,10 +381,6 @@ button:disabled {
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 12px;
-}
-
-.sectionHead.compact {
-  margin-top: 4px;
 }
 
 .sectionHead strong {
@@ -486,11 +510,20 @@ button:disabled {
   }
 
   .workspace,
-  .watchLayout,
+  .intelGrid,
+  .validationGrid,
   .signals,
-  .metrics,
-  .monitorGrid {
+  .metrics {
     grid-template-columns: 1fr;
+  }
+
+  .zoneHead {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .zoneHead span {
+    text-align: left;
   }
 
   .eventRow {
