@@ -34,7 +34,7 @@ const examples = [
   { label: "mETH", value: "mETH" },
   { label: "Merchant Moe", value: "Merchant Moe" },
   {
-    label: "Demo risk address",
+    label: formatTargetLabel("0x0000000000000000000000000000000000000001"),
     value: "0x0000000000000000000000000000000000000001"
   }
 ];
@@ -142,7 +142,7 @@ export default function Home() {
                 onClick={() => setTarget(example.value)}
                 title={example.value}
               >
-                {example.label}
+                <span>{example.label}</span>
               </button>
             ))}
           </div>
@@ -166,10 +166,6 @@ export default function Home() {
             <a href={visibleAnalysis.explorerUrl} target="_blank" rel="noreferrer">
               Open explorer
             </a>
-          </div>
-
-          <div className="summary">
-            <p>{visibleAnalysis.aiSummary}</p>
           </div>
 
           <div className="facts">
@@ -207,4 +203,16 @@ function Fact({ label, value }: { label: string; value: string }) {
       <strong>{value}</strong>
     </div>
   );
+}
+
+function formatTargetLabel(value: string) {
+  if (/^0x[a-fA-F0-9]{40}$/.test(value)) {
+    return `${value.slice(0, 6)}...${value.slice(22, 28)}...${value.slice(-4)}`;
+  }
+
+  if (/^0x[a-fA-F0-9]{64}$/.test(value)) {
+    return `${value.slice(0, 8)}...${value.slice(32, 40)}...${value.slice(-6)}`;
+  }
+
+  return value;
 }

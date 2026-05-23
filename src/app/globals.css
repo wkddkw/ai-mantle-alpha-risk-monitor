@@ -140,6 +140,9 @@ button:disabled {
   grid-template-columns: 1fr;
   gap: 8px;
   margin: 18px 0;
+  max-height: 232px;
+  overflow-y: auto;
+  padding-right: 3px;
 }
 
 .samples button {
@@ -151,6 +154,12 @@ button:disabled {
   min-width: 0;
   overflow: hidden;
   text-align: left;
+}
+
+.samples button span {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -167,7 +176,6 @@ button:disabled {
 }
 
 .notice p,
-.summary p,
 .signal p,
 .statusLine,
 .error {
@@ -235,21 +243,11 @@ button:disabled {
   background: linear-gradient(180deg, var(--danger-bg), #fff 120px);
 }
 
-.summary {
-  margin: 22px 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  padding: 18px 0;
-  max-height: 168px;
-  overflow: auto;
-  overflow-wrap: anywhere;
-  white-space: pre-wrap;
-}
-
 .facts {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
+  margin-top: 18px;
 }
 
 .facts div {
