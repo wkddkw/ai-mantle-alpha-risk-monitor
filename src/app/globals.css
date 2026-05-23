@@ -160,6 +160,7 @@ button:disabled {
 .notice p,
 .summary p,
 .signal p,
+.statusLine,
 .error {
   margin: 0;
   color: var(--muted);
@@ -198,7 +199,7 @@ button:disabled {
 
 .facts {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -220,6 +221,11 @@ button:disabled {
 .facts strong {
   display: block;
   overflow-wrap: anywhere;
+}
+
+.statusLine {
+  margin-top: 14px;
+  font-size: 13px;
 }
 
 .signals {

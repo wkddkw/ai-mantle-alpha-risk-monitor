@@ -10,6 +10,7 @@ export interface AnalysisResult {
   signals: ReturnType<typeof buildRiskSignals>;
   score: number;
   aiSummary: string;
+  aiProvider: "fallback";
   source: "live-rpc" | "demo-fallback";
   explorerUrl: string;
 }
@@ -74,6 +75,7 @@ export async function buildMantleAnalysis(targetInput: string): Promise<Analysis
     signals,
     score,
     aiSummary: buildFallbackSummary(score, signals),
+    aiProvider: "fallback",
     source,
     explorerUrl: buildExplorerUrl(explorerBase, normalized.value, normalized.type)
   };

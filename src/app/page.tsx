@@ -15,6 +15,8 @@ interface AnalysisResponse {
   chain: string;
   score: number;
   aiSummary: string;
+  aiProvider: string;
+  aiStatus?: string;
   source: string;
   explorerUrl: string;
   snapshot: {
@@ -73,6 +75,8 @@ export default function Home() {
         score: 96,
         aiSummary:
           "Risk score 96/100. No major rule-based red flags appeared in the current read-only Mantle data sample.",
+        aiProvider: "fallback",
+        aiStatus: "DEEPSEEK_API_KEY is not configured",
         source: "demo-fallback",
         explorerUrl: "https://explorer.mantle.xyz",
         snapshot: {
@@ -156,10 +160,14 @@ export default function Home() {
             <Fact label="Chain" value={visibleAnalysis.chain} />
             <Fact label="Target type" value={visibleAnalysis.targetType} />
             <Fact label="Source" value={visibleAnalysis.source} />
+            <Fact label="AI provider" value={visibleAnalysis.aiProvider} />
             <Fact label="Known label" value={visibleAnalysis.snapshot.knownProtocol || "N/A"} />
             <Fact label="Transactions" value={String(visibleAnalysis.snapshot.transactionCount)} />
             <Fact label="Failed tx" value={String(visibleAnalysis.snapshot.failedTransactionCount)} />
           </div>
+          {visibleAnalysis.aiStatus ? (
+            <p className="statusLine">AI status: {visibleAnalysis.aiStatus}</p>
+          ) : null}
         </section>
       </section>
 
