@@ -48,11 +48,18 @@ function getRiskBand(score: number) {
 export default function Home() {
   const [target, setTarget] = useState(examples[0].value);
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
+  const [recentTargets, setRecentTargets] = useState(examples);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   async function submit(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
+    const requestedTarget = target.trim();
+    if (!requestedTarget) {
+      setError("Enter a target first.");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
@@ -60,14 +67,25 @@ export default function Home() {
       const response = await fetch("/api/analyze", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ target })
+        body: JSON.stringify({ target: requestedTarget })
       });
 
       if (!response.ok) {
         throw new Error("Analysis request failed");
       }
 
-      setAnalysis((await response.json()) as AnalysisResponse);
+      const nextAnalysis = (await response.json()) as AnalysisResponse;
+      setAnalysis(nextAnalysis);
+      setRecentTargets((items) => {
+        const nextItem = {
+          label: formatTargetLabel(requestedTarget),
+          value: requestedTarget
+        };
+        const deduped = items.filter(
+          (item) => item.value.toLowerCase() !== requestedTarget.toLowerCase()
+        );
+        return [nextItem, ...deduped].slice(0, 5);
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
@@ -130,12 +148,14 @@ export default function Home() {
               placeholder="Protocol name, address, or transaction hash"
             />
             <button type="submit" disabled={loading}>
-              {loading ? "Analyzing..." : "Analyze target"}
+              {loading ? "Analyzing target..." : "Analyze target"}
             </button>
           </form>
 
+          {loading ? <p className="loadingLine">Reading Mantle signals and AI summary...</p> : null}
+
           <div className="samples">
-            {examples.map((example) => (
+            {recentTargets.map((example) => (
               <button
                 key={example.value}
                 type="button"
