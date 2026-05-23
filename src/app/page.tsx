@@ -31,13 +31,22 @@ interface AnalysisResponse {
 }
 
 const examples = [
-  "mETH",
-  "Merchant Moe",
-  "0x0000000000000000000000000000000000000001"
+  { label: "mETH", value: "mETH" },
+  { label: "Merchant Moe", value: "Merchant Moe" },
+  {
+    label: "Demo risk address",
+    value: "0x0000000000000000000000000000000000000001"
+  }
 ];
 
+function getRiskBand(score: number) {
+  if (score >= 80) return "low";
+  if (score >= 55) return "medium";
+  return "high";
+}
+
 export default function Home() {
-  const [target, setTarget] = useState(examples[0]);
+  const [target, setTarget] = useState(examples[0].value);
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -98,9 +107,10 @@ export default function Home() {
       },
     [analysis]
   );
+  const riskBand = getRiskBand(visibleAnalysis.score);
 
   return (
-    <main className="shell">
+    <main className="shell" data-risk={riskBand}>
       <section className="topbar">
         <div>
           <p className="eyebrow">The Turing Test Hackathon 2026</p>
@@ -126,8 +136,13 @@ export default function Home() {
 
           <div className="samples">
             {examples.map((example) => (
-              <button key={example} type="button" onClick={() => setTarget(example)}>
-                {example}
+              <button
+                key={example.value}
+                type="button"
+                onClick={() => setTarget(example.value)}
+                title={example.value}
+              >
+                {example.label}
               </button>
             ))}
           </div>
@@ -144,8 +159,9 @@ export default function Home() {
           <div className="scoreRow">
             <div>
               <p className="label">Risk score</p>
-              <strong>{visibleAnalysis.score}</strong>
+              <strong className="scoreValue">{visibleAnalysis.score}</strong>
               <span>/100</span>
+              <em>{riskBand} risk</em>
             </div>
             <a href={visibleAnalysis.explorerUrl} target="_blank" rel="noreferrer">
               Open explorer

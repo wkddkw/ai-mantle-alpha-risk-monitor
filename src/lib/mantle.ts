@@ -15,10 +15,46 @@ export interface AnalysisResult {
   explorerUrl: string;
 }
 
-const knownProtocols = new Map<string, { name: string; labels: string[] }>([
-  ["meth", { name: "mETH", labels: ["liquid staking", "Mantle ecosystem"] }],
-  ["merchant moe", { name: "Merchant Moe", labels: ["dex", "Mantle ecosystem"] }],
-  ["agni", { name: "Agni Finance", labels: ["dex", "Mantle ecosystem"] }]
+const demoSnapshots = new Map<string, RiskSnapshot>([
+  [
+    "meth",
+    {
+      target: "mETH",
+      chain: "Mantle",
+      transactionCount: 5000,
+      failedTransactionCount: 2,
+      contractVerified: true,
+      contractAgeDays: 300,
+      knownProtocol: "mETH",
+      labels: ["liquid staking", "Mantle ecosystem"]
+    }
+  ],
+  [
+    "merchant moe",
+    {
+      target: "Merchant Moe",
+      chain: "Mantle",
+      transactionCount: 820,
+      failedTransactionCount: 96,
+      contractVerified: true,
+      contractAgeDays: 45,
+      knownProtocol: "Merchant Moe",
+      labels: ["dex", "Mantle ecosystem"]
+    }
+  ],
+  [
+    "0x0000000000000000000000000000000000000001",
+    {
+      target: "0x0000000000000000000000000000000000000001",
+      chain: "Mantle",
+      transactionCount: 10,
+      failedTransactionCount: 4,
+      contractVerified: false,
+      contractAgeDays: 3,
+      knownProtocol: null,
+      labels: ["demo high-risk contract"]
+    }
+  ]
 ]);
 
 export async function buildMantleAnalysis(targetInput: string): Promise<AnalysisResult> {
@@ -28,7 +64,11 @@ export async function buildMantleAnalysis(targetInput: string): Promise<Analysis
   let snapshot: RiskSnapshot;
   let source: AnalysisResult["source"] = "demo-fallback";
 
-  if (normalized.type === "address" && isAddress(normalized.value)) {
+  const demoSnapshot = demoSnapshots.get(normalized.value.toLowerCase());
+
+  if (demoSnapshot) {
+    snapshot = demoSnapshot;
+  } else if (normalized.type === "address" && isAddress(normalized.value)) {
     const client = createPublicClient({
       chain: mantle,
       transport: http(process.env.MANTLE_RPC_URL || "https://rpc.mantle.xyz")
@@ -51,16 +91,15 @@ export async function buildMantleAnalysis(targetInput: string): Promise<Analysis
     };
     source = "live-rpc";
   } else {
-    const protocol = knownProtocols.get(normalized.value.toLowerCase());
     snapshot = {
       target: normalized.value,
       chain,
-      transactionCount: protocol ? 5000 : 6,
-      failedTransactionCount: protocol ? 2 : 1,
-      contractVerified: protocol ? true : null,
-      contractAgeDays: protocol ? 300 : null,
-      knownProtocol: protocol?.name || null,
-      labels: protocol?.labels || ["manual research target"]
+      transactionCount: 6,
+      failedTransactionCount: 1,
+      contractVerified: null,
+      contractAgeDays: null,
+      knownProtocol: null,
+      labels: ["manual research target"]
     };
   }
 

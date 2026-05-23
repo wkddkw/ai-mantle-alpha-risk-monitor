@@ -8,8 +8,11 @@
   --accent: #0f766e;
   --accent-strong: #0b5e58;
   --warning: #b45309;
+  --warning-bg: #fff7ed;
   --danger: #b42318;
+  --danger-bg: #fff1f2;
   --good: #26734d;
+  --good-bg: #eef8f2;
 }
 
 * {
@@ -133,8 +136,8 @@ button:disabled {
 }
 
 .samples {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 8px;
   margin: 18px 0;
 }
@@ -144,6 +147,12 @@ button:disabled {
   color: var(--ink);
   font-size: 13px;
   padding: 8px 10px;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .notice {
@@ -188,6 +197,42 @@ button:disabled {
 .scoreRow span {
   color: var(--muted);
   font-weight: 800;
+}
+
+.scoreRow em {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.scoreValue {
+  color: var(--good);
+}
+
+[data-risk="medium"] .scoreValue {
+  color: var(--warning);
+}
+
+[data-risk="high"] .scoreValue {
+  color: var(--danger);
+}
+
+[data-risk="low"] .report {
+  border-top: 5px solid var(--good);
+}
+
+[data-risk="medium"] .report {
+  border-top: 5px solid var(--warning);
+  background: linear-gradient(180deg, var(--warning-bg), #fff 110px);
+}
+
+[data-risk="high"] .report {
+  border-top: 5px solid var(--danger);
+  background: linear-gradient(180deg, var(--danger-bg), #fff 120px);
 }
 
 .summary {
@@ -237,6 +282,21 @@ button:disabled {
 
 .signal {
   padding: 18px;
+}
+
+.signal[data-severity="low"] {
+  border-color: rgb(38 115 77 / 35%);
+  background: var(--good-bg);
+}
+
+.signal[data-severity="medium"] {
+  border-color: rgb(180 83 9 / 35%);
+  background: var(--warning-bg);
+}
+
+.signal[data-severity="high"] {
+  border-color: rgb(180 35 24 / 38%);
+  background: var(--danger-bg);
 }
 
 .signal span {
