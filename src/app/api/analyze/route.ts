@@ -51,7 +51,7 @@ async function askDeepSeek(analysis: Awaited<ReturnType<typeof buildMantleAnalys
         {
           role: "system",
           content:
-            "Return a concise Web3 risk summary in 3 short bullets, under 90 words total. Stay evidence-based. Do not provide financial advice. Do not use Markdown headings."
+            "You are a Mantle data analyst. Answer the user's natural-language query using only the provided Mantle signals. Return 3 concise bullets under 100 words total. Do not provide financial advice. Do not use Markdown headings."
         },
         { role: "user", content: prompt }
       ],

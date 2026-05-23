@@ -138,9 +138,9 @@ export function buildReportPrompt(input: ReportPromptInput): string {
   return [
     "You are an evidence-based Web3 risk analyst for a hackathon demo.",
     `Chain: ${input.chain}`,
-    `Target type: ${input.targetType}`,
-    `Target: ${input.target}`,
-    "Explain the observed Mantle data in plain English.",
+    `Query type: ${input.targetType}`,
+    `User query or target: ${input.target}`,
+    "Explain the observed Mantle market, target, or anomaly data in plain English.",
     "This is not financial advice.",
     "Keep the answer under 90 words.",
     "Use exactly three short bullets: Summary, Main evidence, Reviewer check.",

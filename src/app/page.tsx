@@ -43,15 +43,6 @@ interface WatchEvent {
   evidence: string;
 }
 
-const examples = [
-  { label: "mETH", value: "mETH" },
-  { label: "Merchant Moe", value: "Merchant Moe" },
-  {
-    label: formatTargetLabel("0x0000000000000000000000000000000000000001"),
-    value: "0x0000000000000000000000000000000000000001"
-  }
-];
-
 const watchEvents: WatchEvent[] = [
   {
     id: "evt-1",
@@ -109,6 +100,13 @@ const smartMoneyRows = [
   { label: "New contract deployer", flow: "-$180K", confidence: "Review", tag: "Failure spike" }
 ];
 
+const promptExamples = [
+  "Summarize current Mantle market anomalies",
+  "Which smart-money flow looks most important?",
+  "Analyze mETH based on current signals",
+  "Explain the high-risk contract event"
+];
+
 function getRiskBand(score: number) {
   if (score >= 80) return "low";
   if (score >= 55) return "medium";
@@ -116,10 +114,9 @@ function getRiskBand(score: number) {
 }
 
 export default function Home() {
-  const [target, setTarget] = useState(examples[0].value);
+  const [target, setTarget] = useState(promptExamples[0]);
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<WatchEvent>(watchEvents[0]);
-  const [recentTargets, setRecentTargets] = useState(examples);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -147,16 +144,6 @@ export default function Home() {
 
       const nextAnalysis = (await response.json()) as AnalysisResponse;
       setAnalysis(nextAnalysis);
-      setRecentTargets((items) => {
-        const nextItem = {
-          label: formatTargetLabel(requestedTarget),
-          value: requestedTarget
-        };
-        const deduped = items.filter(
-          (item) => item.value.toLowerCase() !== requestedTarget.toLowerCase()
-        );
-        return [nextItem, ...deduped].slice(0, 5);
-      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
@@ -270,38 +257,38 @@ export default function Home() {
       <section className="validationZone">
         <div className="zoneHead">
           <div>
-            <p className="eyebrow">Validation</p>
-            <h2>Target Review</h2>
+            <p className="eyebrow">AI Query</p>
+            <h2>Data Analyst</h2>
           </div>
-          <span>{analysis ? "Manual analysis" : selectedEvent.title}</span>
+          <span>Ask about market, data, key targets, or Mantle chain signals</span>
         </div>
 
-        <div className="validationGrid">
+        <div className="queryGrid">
           <aside className="panel controls">
           <form onSubmit={submit}>
-            <label htmlFor="target">Target</label>
-            <input
+            <label htmlFor="target">Natural language query</label>
+            <textarea
               id="target"
               value={target}
               onChange={(event) => setTarget(event.target.value)}
-              placeholder="Protocol name, address, or transaction hash"
+              placeholder="Ask about current Mantle market, smart-money flow, risk clusters, mETH, Merchant Moe, or a contract address"
             />
             <button type="submit" disabled={loading}>
-              {loading ? "Analyzing target..." : "Analyze target"}
+              {loading ? "Analyzing data..." : "Ask AI analyst"}
             </button>
           </form>
 
           {loading ? <p className="loadingLine">Reading Mantle signals and AI verdict...</p> : null}
 
-          <div className="samples">
-            {recentTargets.map((example) => (
+          <div className="samples promptList">
+            {promptExamples.map((example) => (
               <button
-                key={example.value}
+                key={example}
                 type="button"
-                onClick={() => setTarget(example.value)}
-                title={example.value}
+                onClick={() => setTarget(example)}
+                title={example}
               >
-                <span>{example.label}</span>
+                <span>{example}</span>
               </button>
             ))}
           </div>
@@ -317,19 +304,24 @@ export default function Home() {
           <section className="panel report">
           <div className="scoreRow">
             <div>
-              <p className="label">Selected event risk</p>
+              <p className="label">AI data confidence</p>
               <strong className="scoreValue">{analysis ? visibleAnalysis.score : selectedEvent.score}</strong>
               <span>/100</span>
-              <em>{analysis ? riskBand : selectedEvent.severity} risk</em>
+              <em>{analysis ? riskBand : selectedEvent.severity} signal confidence</em>
             </div>
             <a href={visibleAnalysis.explorerUrl} target="_blank" rel="noreferrer">
               Open explorer
             </a>
           </div>
 
+          <div className="aiAnswer">
+            <p className="label">AI answer</p>
+            <p>{analysis ? visibleAnalysis.aiSummary : selectedEvent.evidence}</p>
+          </div>
+
           <div className="facts">
             <Fact label="Chain" value={visibleAnalysis.chain} />
-            <Fact label="Target type" value={visibleAnalysis.targetType} />
+            <Fact label="Query type" value={visibleAnalysis.targetType} />
             <Fact label="Source" value={visibleAnalysis.source} />
             <Fact label="AI provider" value={visibleAnalysis.aiProvider} />
             <Fact label="Known label" value={visibleAnalysis.snapshot.knownProtocol || "N/A"} />
@@ -341,7 +333,7 @@ export default function Home() {
           ) : null}
 
           <div className="detailBlock">
-            <p className="label">Signals</p>
+            <p className="label">Evidence used</p>
             <div className="signals">
               {visibleAnalysis.signals.map((signal) => (
                 <article className="signal" data-severity={signal.severity} key={signal.id}>
@@ -375,16 +367,4 @@ function Fact({ label, value }: { label: string; value: string }) {
       <strong>{value}</strong>
     </div>
   );
-}
-
-function formatTargetLabel(value: string) {
-  if (/^0x[a-fA-F0-9]{40}$/.test(value)) {
-    return `${value.slice(0, 6)}...${value.slice(22, 28)}...${value.slice(-4)}`;
-  }
-
-  if (/^0x[a-fA-F0-9]{64}$/.test(value)) {
-    return `${value.slice(0, 8)}...${value.slice(32, 40)}...${value.slice(-6)}`;
-  }
-
-  return value;
 }

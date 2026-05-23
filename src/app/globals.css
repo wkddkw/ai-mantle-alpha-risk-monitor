@@ -112,11 +112,16 @@ h1 {
   gap: 14px;
 }
 
-.validationGrid {
+.validationGrid,
+.queryGrid {
   display: grid;
   grid-template-columns: 360px minmax(0, 1fr);
   gap: 18px;
   align-items: start;
+}
+
+.queryGrid {
+  grid-template-columns: 390px minmax(0, 1fr);
 }
 
 .metrics {
@@ -193,7 +198,23 @@ input {
   outline: none;
 }
 
+textarea {
+  width: 100%;
+  min-height: 122px;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--ink);
+  outline: none;
+}
+
 input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgb(15 118 110 / 14%);
+}
+
+textarea:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgb(15 118 110 / 14%);
 }
@@ -242,6 +263,10 @@ button:disabled {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.promptList {
+  max-height: none;
 }
 
 .notice {
@@ -356,6 +381,21 @@ button:disabled {
 .facts strong {
   display: block;
   overflow-wrap: anywhere;
+}
+
+.aiAnswer {
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 14px;
+}
+
+.aiAnswer p:last-child {
+  margin: 8px 0 0;
+  color: var(--ink);
+  line-height: 1.55;
+  white-space: pre-wrap;
 }
 
 .statusLine {
@@ -512,6 +552,7 @@ button:disabled {
   .workspace,
   .intelGrid,
   .validationGrid,
+  .queryGrid,
   .signals,
   .metrics {
     grid-template-columns: 1fr;
