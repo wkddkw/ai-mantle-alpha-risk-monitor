@@ -80,12 +80,57 @@ h1 {
   align-items: stretch;
 }
 
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.metric {
+  min-height: 86px;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--accent);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 14px;
+}
+
+.metric[data-tone="high"] {
+  border-top-color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.metric[data-tone="low"] {
+  border-top-color: var(--good);
+  background: var(--good-bg);
+}
+
+.metric span,
+.eventRow span,
+.moneyRow span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.metric strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 30px;
+}
+
 .panel,
 .signal {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 8px;
   box-shadow: 0 10px 28px rgb(23 32 42 / 6%);
+}
+
+.watchtower {
+  align-items: start;
 }
 
 .controls,
@@ -290,6 +335,92 @@ button:disabled {
   margin-top: 18px;
 }
 
+.monitorGrid {
+  display: grid;
+  grid-template-columns: 1.35fr 0.9fr;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.feed,
+.smartMoney {
+  padding: 18px;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sectionHead strong {
+  font-size: 18px;
+}
+
+.eventRow {
+  display: grid;
+  grid-template-columns: 72px 1fr 150px 130px;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--good);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  padding: 12px;
+  text-align: left;
+}
+
+.eventRow + .eventRow,
+.moneyRow + .moneyRow {
+  margin-top: 10px;
+}
+
+.eventRow[data-severity="medium"] {
+  border-left-color: var(--warning);
+  background: var(--warning-bg);
+}
+
+.eventRow[data-severity="high"] {
+  border-left-color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.eventRow strong,
+.moneyRow strong {
+  overflow-wrap: anywhere;
+}
+
+.eventRow em,
+.eventRow b,
+.moneyRow em,
+.moneyRow b {
+  color: var(--muted);
+  font-style: normal;
+  font-weight: 800;
+}
+
+.moneyRow {
+  display: grid;
+  grid-template-columns: 1fr 110px;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.moneyRow b {
+  color: var(--good);
+  text-align: right;
+}
+
+.moneyRow em {
+  text-align: right;
+}
+
 .signal {
   padding: 18px;
 }
@@ -343,7 +474,13 @@ button:disabled {
   }
 
   .workspace,
-  .signals {
+  .signals,
+  .metrics,
+  .monitorGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .eventRow {
     grid-template-columns: 1fr;
   }
 

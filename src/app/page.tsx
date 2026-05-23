@@ -30,6 +30,19 @@ interface AnalysisResponse {
   signals: Signal[];
 }
 
+interface WatchEvent {
+  id: string;
+  title: string;
+  target: string;
+  protocol: string;
+  severity: "low" | "medium" | "high";
+  kind: string;
+  amount: string;
+  time: string;
+  score: number;
+  evidence: string;
+}
+
 const examples = [
   { label: "mETH", value: "mETH" },
   { label: "Merchant Moe", value: "Merchant Moe" },
@@ -37,6 +50,63 @@ const examples = [
     label: formatTargetLabel("0x0000000000000000000000000000000000000001"),
     value: "0x0000000000000000000000000000000000000001"
   }
+];
+
+const watchEvents: WatchEvent[] = [
+  {
+    id: "evt-1",
+    title: "New unverified contract with failed calls",
+    target: "0x0000000000000000000000000000000000000001",
+    protocol: "Unknown contract",
+    severity: "high",
+    kind: "Contract anomaly",
+    amount: "10 tx / 40% failed",
+    time: "8m ago",
+    score: 14,
+    evidence: "Unverified source, 4 failed transactions, and only 3 days of history."
+  },
+  {
+    id: "evt-2",
+    title: "Smart money entered mETH pool",
+    target: "mETH",
+    protocol: "mETH",
+    severity: "low",
+    kind: "Smart money",
+    amount: "$2.4M inflow",
+    time: "22m ago",
+    score: 96,
+    evidence: "Known Mantle ecosystem label and low observed failure rate."
+  },
+  {
+    id: "evt-3",
+    title: "DEX route shows elevated failed swaps",
+    target: "Merchant Moe",
+    protocol: "Merchant Moe",
+    severity: "medium",
+    kind: "Execution quality",
+    amount: "96 failed / 820 tx",
+    time: "41m ago",
+    score: 78,
+    evidence: "Known protocol, but 12% observed transaction failure ratio."
+  },
+  {
+    id: "evt-4",
+    title: "Low history target added to review queue",
+    target: "0x1111111111111111111111111111111111111111",
+    protocol: "Manual watchlist",
+    severity: "medium",
+    kind: "Low history",
+    amount: "6 tx sample",
+    time: "1h ago",
+    score: 64,
+    evidence: "Small transaction sample limits confidence until more activity appears."
+  }
+];
+
+const smartMoneyRows = [
+  { label: "mETH accumulator", flow: "+$2.4M", confidence: "High", tag: "Liquid staking" },
+  { label: "DEX arbitrage cluster", flow: "+$760K", confidence: "Medium", tag: "Route activity" },
+  { label: "New contract deployer", flow: "-$180K", confidence: "Review", tag: "Failure spike" }
 ];
 
 function getRiskBand(score: number) {
@@ -48,6 +118,7 @@ function getRiskBand(score: number) {
 export default function Home() {
   const [target, setTarget] = useState(examples[0].value);
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<WatchEvent>(watchEvents[0]);
   const [recentTargets, setRecentTargets] = useState(examples);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -132,12 +203,19 @@ export default function Home() {
       <section className="topbar">
         <div>
           <p className="eyebrow">The Turing Test Hackathon 2026</p>
-          <h1>AI Mantle Alpha & Risk Monitor</h1>
+          <h1>Mantle Alpha Watchtower</h1>
         </div>
-        <span className="network">Mantle read-only demo</span>
+        <span className="network">AI anomaly watchlist</span>
       </section>
 
-      <section className="workspace">
+      <section className="metrics">
+        <Metric label="Open anomalies" value="4" tone="high" />
+        <Metric label="Smart money inflow" value="$3.16M" tone="low" />
+        <Metric label="Failed tx spike" value="40%" tone="high" />
+        <Metric label="AI status" value={visibleAnalysis.aiProvider} tone="low" />
+      </section>
+
+      <section className="workspace watchtower">
         <aside className="panel controls">
           <form onSubmit={submit}>
             <label htmlFor="target">Target</label>
@@ -152,7 +230,7 @@ export default function Home() {
             </button>
           </form>
 
-          {loading ? <p className="loadingLine">Reading Mantle signals and AI summary...</p> : null}
+          {loading ? <p className="loadingLine">Reading Mantle signals and AI verdict...</p> : null}
 
           <div className="samples">
             {recentTargets.map((example) => (
@@ -178,10 +256,10 @@ export default function Home() {
         <section className="panel report">
           <div className="scoreRow">
             <div>
-              <p className="label">Risk score</p>
-              <strong className="scoreValue">{visibleAnalysis.score}</strong>
+              <p className="label">Selected event risk</p>
+              <strong className="scoreValue">{analysis ? visibleAnalysis.score : selectedEvent.score}</strong>
               <span>/100</span>
-              <em>{riskBand} risk</em>
+              <em>{analysis ? riskBand : selectedEvent.severity} risk</em>
             </div>
             <a href={visibleAnalysis.explorerUrl} target="_blank" rel="noreferrer">
               Open explorer
@@ -203,6 +281,48 @@ export default function Home() {
         </section>
       </section>
 
+      <section className="monitorGrid">
+        <section className="panel feed">
+          <div className="sectionHead">
+            <p className="label">Live anomaly feed</p>
+            <strong>Priority queue</strong>
+          </div>
+          {watchEvents.map((event) => (
+            <button
+              className="eventRow"
+              data-severity={event.severity}
+              key={event.id}
+              type="button"
+              onClick={() => {
+                setSelectedEvent(event);
+                setTarget(event.target);
+                setAnalysis(null);
+              }}
+            >
+              <span>{event.time}</span>
+              <strong>{event.title}</strong>
+              <em>{event.protocol}</em>
+              <b>{event.amount}</b>
+            </button>
+          ))}
+        </section>
+
+        <section className="panel smartMoney">
+          <div className="sectionHead">
+            <p className="label">Smart money</p>
+            <strong>Wallet clusters</strong>
+          </div>
+          {smartMoneyRows.map((row) => (
+            <div className="moneyRow" key={row.label}>
+              <strong>{row.label}</strong>
+              <span>{row.tag}</span>
+              <b>{row.flow}</b>
+              <em>{row.confidence}</em>
+            </div>
+          ))}
+        </section>
+      </section>
+
       <section className="signals">
         {visibleAnalysis.signals.map((signal) => (
           <article className="signal" data-severity={signal.severity} key={signal.id}>
@@ -213,6 +333,15 @@ export default function Home() {
         ))}
       </section>
     </main>
+  );
+}
+
+function Metric({ label, value, tone }: { label: string; value: string; tone: string }) {
+  return (
+    <div className="metric" data-tone={tone}>
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
   );
 }
 
